@@ -21,3 +21,4 @@ model.fit(x, y, epochs=150) #학습하는것 x,y데이터 많을수록 좋음
 result = model.predict(np.array([4]))
 print("4의 예측값 : ", result)
 
+#결과

@@ -27,3 +27,5 @@ loss = model.evaluate(x,y)
 print("loss : ", loss)
 # result = model.predict(np.array([1,2,3,4,5]))
 # print("7의 예측값 : ", result)
+
+#결과 : loss :  0.3364241421222687
