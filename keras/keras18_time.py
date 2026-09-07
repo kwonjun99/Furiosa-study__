@@ -1,4 +1,4 @@
-#https://www.kaggle.com/competitions/bike-sharing-demand/rules
+#14-1copy
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,14 +51,14 @@ model.add(Dense(8, activation='relu'))
 model.add(Dense(1)) #마지막층은 relu 안하는게 좋음 마지막층은 default가 미니어
 #3. compile, train
 model.compile(loss='mse', optimizer='adam')
-start_time = time.time()
+start_time = time.time() #현재시간을 반환 시작시간
 
 batch_size = 30
-history = model.fit(x_train,y_train, epochs=345, batch_size = 30,
+history = model.fit(x_train,y_train, epochs=5, batch_size = 30,
                     verbose=1, validation_split=0.33)
 
 train_time = time.time() - start_time
-
+end_time = time.time() #끝시간을 반환
 #4. evaluate, predict
 loss = model.evaluate(x_test,y_test)
 
@@ -71,19 +71,20 @@ def RMSE(y_test, y_predict):
     return np.sqrt(mean_squared_error(y_test,y_predict))
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
+print('걸린시간 :', round(train_time,2), "초")
 
-y_submit = model.predict(test_csv)
-submission['count'] = y_submit
+# y_submit = model.predict(test_csv)
+# submission['count'] = y_submit
 
-submission.to_csv(path + "submit/" + "submit_0907_1430.csv", index=True)
+# submission.to_csv(path + "submit/" + "submit_0907_1430.csv", index=True)
 
-my_util.record_model_csv(
-    model = model,
-    data_shape = x_train.shape,
-    random_num = 78,
-    batch_size = batch_size,
-    history = history,
-    training_time = train_time,
-    test_loss = loss,
-    r2 = r2
-)
+# my_util.record_model_csv(
+#     model = model,
+#     data_shape = x_train.shape,
+#     random_num = 78,
+#     batch_size = batch_size,
+#     history = history,
+#     training_time = train_time,
+#     test_loss = loss,
+#     r2 = r2
+# )

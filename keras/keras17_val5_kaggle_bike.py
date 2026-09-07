@@ -53,9 +53,9 @@ model.add(Dense(1)) #마지막층은 relu 안하는게 좋음 마지막층은 de
 model.compile(loss='mse', optimizer='adam')
 start_time = time.time()
 
-batch_size = 30
-history = model.fit(x_train,y_train, epochs=345, batch_size = 30,
-                    verbose=1, validation_split=0.33)
+batch_size = 15
+history = model.fit(x_train,y_train, epochs=345, batch_size = 15,
+                    verbose=1, validation_split=0.3)
 
 train_time = time.time() - start_time
 

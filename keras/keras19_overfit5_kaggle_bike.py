@@ -53,9 +53,9 @@ model.add(Dense(1)) #마지막층은 relu 안하는게 좋음 마지막층은 de
 model.compile(loss='mse', optimizer='adam')
 start_time = time.time()
 
-batch_size = 30
-history = model.fit(x_train,y_train, epochs=345, batch_size = 30,
-                    verbose=1, validation_split=0.33)
+batch_size = 15
+history = model.fit(x_train,y_train, epochs=345, batch_size = 15,
+                    verbose=1, validation_split=0.2)
 
 train_time = time.time() - start_time
 
@@ -76,6 +76,21 @@ y_submit = model.predict(test_csv)
 submission['count'] = y_submit
 
 submission.to_csv(path + "submit/" + "submit_0907_1430.csv", index=True)
+
+print("====================== history ===============================")
+plt.figure(figsize=(9,6)) #그냥 그림판 자체 크기 사이즈
+plt.plot(history.history['loss'][10:], c='red', label='loss') #y값만 넣으면 x디폴트는 시간순으로 그려줌
+plt.plot(history.history['val_loss'][10:], c='blue', label='val_loss')
+plt.legend(loc='upper right')
+plt.title('bike Loss')
+plt.xlabel('epoch')
+plt.ylabel('loss')
+plt.grid() 
+plt.legend()
+plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] = False
+plt.show()
+plt.show()
 
 my_util.record_model_csv(
     model = model,

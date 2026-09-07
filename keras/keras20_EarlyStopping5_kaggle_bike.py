@@ -8,7 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,mean_squared_error,mean_absolute_error
-
+from tensorflow.keras.callbacks import EarlyStopping
 
 #1. data
 path = "./_data/kaggle_bike/"
@@ -51,14 +51,21 @@ model.add(Dense(8, activation='relu'))
 model.add(Dense(1)) #마지막층은 relu 안하는게 좋음 마지막층은 default가 미니어
 #3. compile, train
 model.compile(loss='mse', optimizer='adam')
-start_time = time.time()
 
-batch_size = 30
-history = model.fit(x_train,y_train, epochs=345, batch_size = 30,
-                    verbose=1, validation_split=0.33)
+es = EarlyStopping(#class
+    monitor='val_loss',
+    mode = 'auto', #뭔지 헷갈릴때는 auto 잡기 loss는 min이긴함.
+    patience=20, #참는다 인내심 최소가 더 나오는지 기다리는거
+    restore_best_weights=True, #이거 안쓰면 10번째 뒤에게 채택됨 
+)
+start_time = time.time()
+batch_size=30
+history = model.fit(x_train,y_train, epochs=1000, batch_size = 50,
+                    verbose=1, validation_split=0.15,
+                    callbacks=[es], #2개이상은 리스트. es를 리스트형태로 받아들임.
+                    )
 
 train_time = time.time() - start_time
-
 #4. evaluate, predict
 loss = model.evaluate(x_test,y_test)
 
@@ -75,7 +82,22 @@ print("RMSE : ", rmse)
 y_submit = model.predict(test_csv)
 submission['count'] = y_submit
 
-submission.to_csv(path + "submit/" + "submit_0907_1430.csv", index=True)
+submission.to_csv(path + "submit/" + "submit_0907_1930.csv", index=True)
+
+print("====================== history ===============================")
+plt.figure(figsize=(9,6)) #그냥 그림판 자체 크기 사이즈
+plt.plot(history.history['loss'][10:], c='red', label='loss') #y값만 넣으면 x디폴트는 시간순으로 그려줌
+plt.plot(history.history['val_loss'][10:], c='blue', label='val_loss')
+plt.legend(loc='upper right')
+plt.title('bike Loss')
+plt.xlabel('epoch')
+plt.ylabel('loss')
+plt.grid() 
+plt.legend()
+plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] = False
+plt.show()
+plt.show()
 
 my_util.record_model_csv(
     model = model,

@@ -1,3 +1,4 @@
+#9_1 copy
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -26,7 +27,15 @@ model.add(Dense(1))
 
 #3.compile,train
 model.compile(loss='mse', optimizer='adam')
-model.fit(x_train,y_train,validation_split = 0.2, epochs=380, batch_size=4)
+model.fit(x_train,y_train, epochs=100, batch_size=4, 
+          verbose=2,  
+          )
+
+# 훈련 부분 -> verbose
+# verbose= 0 : 침묵
+# verbose = 1 : 디폴트
+# verbose = 2 : 프로그래스바 삭제
+# verbose >= 3 : epoch만 나옴
 
 #4.evaluate,predict
 loss = model.evaluate(x_test,y_test)
