@@ -59,8 +59,8 @@ es = EarlyStopping(#class
     restore_best_weights=True, #이거 안쓰면 10번째 뒤에게 채택됨 
 )
 start_time = time.time()
-batch_size=30
-history = model.fit(x_train,y_train, epochs=1000, batch_size = 50,
+batch_size=55
+history = model.fit(x_train,y_train, epochs=1000, batch_size = 55,
                     verbose=1, validation_split=0.15,
                     callbacks=[es], #2개이상은 리스트. es를 리스트형태로 받아들임.
                     )
@@ -77,12 +77,12 @@ mse = mean_squared_error(y_test, y_predict)
 def RMSE(y_test, y_predict):
     return np.sqrt(mean_squared_error(y_test,y_predict))
 rmse = RMSE(y_test, y_predict)
-print("RMSE : ", rmse)
+print(f"RMSE : {rmse : .2f}")
 
 y_submit = model.predict(test_csv)
 submission['count'] = y_submit
 
-submission.to_csv(path + "submit/" + "submit_0907_1930.csv", index=True)
+submission.to_csv(path + "submit/" + "submit_0908_1030.csv", index=True)
 
 print("====================== history ===============================")
 plt.figure(figsize=(9,6)) #그냥 그림판 자체 크기 사이즈
@@ -109,3 +109,5 @@ my_util.record_model_csv(
     test_loss = loss,
     r2 = r2
 )
+
+# RMSE : 147.91 -> 146.42
