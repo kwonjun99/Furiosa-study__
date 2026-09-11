@@ -36,8 +36,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     shuffle=True,
     random_state=78
 )
-from sklearn.preprocessing import MinMaxScaler,minmax_scale
-scaler = MinMaxScaler()
+from sklearn.preprocessing import MinMaxScaler,StandardScaler, MaxAbsScaler, RobustScaler
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train) #train의 xmin,xmax학습 후 변환시킴 모두 0~1사이로
 x_test = scaler.transform(x_test)
@@ -58,7 +61,7 @@ model.compile(loss='mse', optimizer='adam')
 es = EarlyStopping(#class
     monitor='val_loss',
     mode = 'auto', #뭔지 헷갈릴때는 auto 잡기 loss는 min이긴함.
-    patience=20, #참는다 인내심 최소가 더 나오는지 기다리는거
+    patience=50, #참는다 인내심 최소가 더 나오는지 기다리는거
     restore_best_weights=True, #이거 안쓰면 10번째 뒤에게 채택됨 
 )
 start_time = time.time()
@@ -86,32 +89,32 @@ y_submit = model.predict(test_csv)
 # test_csv = scaler.transform(test_csv)
 submission['count'] = y_submit
 
-submission.to_csv(path + "submit/" + "submit_0910_1830.csv", index=True)
+submission.to_csv(path + "submit/" + "submit_0911_1830.csv", index=True)
 
-print("====================== history ===============================")
-plt.figure(figsize=(9,6)) #그냥 그림판 자체 크기 사이즈
-plt.plot(history.history['loss'][10:], c='red', label='loss') #y값만 넣으면 x디폴트는 시간순으로 그려줌
-plt.plot(history.history['val_loss'][10:], c='blue', label='val_loss')
-plt.legend(loc='upper right')
-plt.title('bike Loss')
-plt.xlabel('epoch')
-plt.ylabel('loss')
-plt.grid() 
-plt.legend()
-plt.rcParams['font.family'] = 'Malgun Gothic'
-plt.rcParams['axes.unicode_minus'] = False
-plt.show()
-plt.show()
+# print("====================== history ===============================")
+# plt.figure(figsize=(9,6)) #그냥 그림판 자체 크기 사이즈
+# plt.plot(history.history['loss'][10:], c='red', label='loss') #y값만 넣으면 x디폴트는 시간순으로 그려줌
+# plt.plot(history.history['val_loss'][10:], c='blue', label='val_loss')
+# plt.legend(loc='upper right')
+# plt.title('bike Loss')
+# plt.xlabel('epoch')
+# plt.ylabel('loss')
+# plt.grid() 
+# plt.legend()
+# plt.rcParams['font.family'] = 'Malgun Gothic'
+# plt.rcParams['axes.unicode_minus'] = False
+# plt.show()
+# plt.show()
 
 my_util.record_model_csv(
-    model = model,
-    data_shape = x_train.shape,
-    random_num = 78,
-    batch_size = batch_size,
-    history = history,
-    training_time = train_time,
-    test_loss = loss,
-    r2 = r2
+    model=model,
+    data_shape=x_train.shape,
+    random_num=78,
+    batch_size=batch_size,
+    history=history,
+    training_time=train_time,
+    # test_loss=result,
+    csv_file_path="./keras/model_history_log_v2.csv"
 )
 
 # RMSE : 147.91 -> 146.42 RMSE :  146.61

@@ -36,10 +36,14 @@ x_train, x_test, y_train, y_test = train_test_split(#x_train,x_test이거 순서
     random_state=49
 )
 
-from sklearn.preprocessing import MinMaxScaler,minmax_scale
-scaler = MinMaxScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train) #train의 xmin,xmax학습 후 변환시킴 모두 0~1사이로
+from sklearn.preprocessing import MinMaxScaler,StandardScaler, MaxAbsScaler, RobustScaler
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+# scaler.fit(x_train)
+# x_train = scaler.transform(x_train) #train의 xmin,xmax학습 후 변환시킴 모두 0~1사이로
+x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 print(np.min(x_train), np.max(x_train)) #0.0 1.0000000000000004
 print(np.min(x_test), np.max(x_test)) #-0.0010638297872338498 1.0
@@ -83,9 +87,9 @@ def RMSE(y_test, y_predict):
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
 
-print("====================== history ===============================")
-print(history.history['loss'])
-print(history.history['val_loss'])
+# print("====================== history ===============================")
+# print(history.history['loss'])
+# print(history.history['val_loss'])
 # plt.figure(figsize=(9,6)) #그냥 그림판 자체 크기 사이즈
 # plt.plot(history.history['loss'][3:], c='red', label='loss') #y값만 넣으면 x디폴트는 시간순으로 그려줌
 # plt.plot(history.history['val_loss'][3:], c='blue', label='val_loss')
@@ -102,17 +106,18 @@ print(history.history['val_loss'])
 
 
 my_util.record_model_csv(
-    model = model,
-    data_shape = x_train.shape,
-    random_num = 0,
-    batch_size = batch_size,
-    history = history,
-    training_time = train_time,
-    test_loss = loss,
-    r2 = r2
+    model=model,
+    data_shape=x_train.shape,
+    random_num=78,
+    batch_size=batch_size,
+    history=history,
+    training_time=train_time,
+    # test_loss=result,
+    csv_file_path="./keras/model_history_log_v2.csv"
 )
-#R2 기준 0.55 
-#r2 :  0.5207760566600557
+
+# R2 기준 0.55 
+# r2 :  0.5207760566600557
 # r2 :  0.779879422449819 (성능향상 굳)
 
 

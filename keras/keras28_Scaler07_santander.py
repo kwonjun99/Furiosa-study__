@@ -32,8 +32,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     stratify=y,
 )
 
-from sklearn.preprocessing import MinMaxScaler,minmax_scale
-scaler = MinMaxScaler()
+from sklearn.preprocessing import MinMaxScaler,StandardScaler, MaxAbsScaler, RobustScaler
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train) #train의 xmin,xmax학습 후 변환시킴 모두 0~1사이로
 x_test = scaler.transform(x_test)
@@ -68,7 +71,7 @@ es = EarlyStopping(
 )
 start_time = time.time()
 batch_size=9000
-history = model.fit(x_train, y_train, epochs=1000, batch_size = 9000,
+history = model.fit(x_train, y_train, epochs=100, batch_size = 9000,
                     verbose=1, validation_split=0.2,
                     callbacks=[es],
                     )
@@ -78,9 +81,14 @@ train_time = time.time() - start_time
 
 #4. evaluate, predict
 loss = model.evaluate(x_test,y_test)
-print("=====================================")
-print("loss : ", round(loss[0],4))
-print("acc :  ", round(loss[1],4))
+result = model.evaluate(
+    x_test,
+    y_test,
+    return_dict=True
+)
+# print("=====================================")
+# print("loss : ", round(loss[0],4))
+# print("acc :  ", round(loss[1],4))
 
 y_predict = model.predict(x_test)
 
@@ -104,12 +112,12 @@ submission['count'] = y_submit
 submission.to_csv(path + "submit/" + "submit_0910_1830.csv", index=True)
 
 my_util.record_model_csv(
-    model = model,
-    data_shape = x_train.shape,
-    random_num = 78,
-    batch_size = batch_size,
-    history = history,
-    training_time = train_time,
-    test_loss = loss,
-    r2 = r2
+    model=model,
+    data_shape=x_train.shape,
+    random_num=78,
+    batch_size=batch_size,
+    history=history,
+    training_time=train_time,
+    test_loss=result,
+    csv_file_path="./keras/model_history_log_v2.csv"
 )

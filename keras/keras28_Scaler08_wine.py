@@ -33,8 +33,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     stratify=y, #y데이터를 stratify하게 한다. -> 분류에서는 해주고 y기준으로 동일하게 잘림.
 )
 
-from sklearn.preprocessing import MinMaxScaler,minmax_scale
-scaler = MinMaxScaler()
+from sklearn.preprocessing import MinMaxScaler,StandardScaler, MaxAbsScaler, RobustScaler
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train) #train의 xmin,xmax학습 후 변환시킴 모두 0~1사이로
 x_test = scaler.transform(x_test)
@@ -68,9 +71,9 @@ history = model.fit(x_train, y_train, epochs=1000, batch_size=6,
 train_time = time.time() - start_time
 
 #4.evaluate, predict
-result = model.evaluate(x_test,y_test)
-print('loss : ', result[0]) # 그냥 loss적으면 metrics들어가있어서 2개나옴
-print('acc : ', round(result[1],2))
+result = model.evaluate(x_test,y_test, return_dict=True)
+print(result) # 그냥 loss적으면 metrics들어가있어서 2개나옴
+# print('acc : ', round(result[1],2))
 
 y_predict = model.predict(x_test)
 y_predict = np.argmax(y_predict, axis=1)
@@ -83,16 +86,15 @@ print(y_test)
 
 
 my_util.record_model_csv(
-    model = model,
-    data_shape = x_train.shape,
-    random_num = 78,
-    batch_size = batch_size,
-    history = history,
-    training_time = train_time,
-    test_loss = result,
-    # r2 = r2
+    model=model,
+    data_shape=x_train.shape,
+    random_num=78,
+    batch_size=batch_size,
+    history=history,
+    training_time=train_time,
+    test_loss=result,
+    csv_file_path="./keras/model_history_log_v2.csv"
 )
-
 
 
 

@@ -43,8 +43,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     stratify=y, #y데이터를 stratify하게 한다. -> 분류에서는 해주고 y기준으로 동일하게 잘림.
 )
 
-from sklearn.preprocessing import MinMaxScaler,minmax_scale
-scaler = MinMaxScaler()
+from sklearn.preprocessing import MinMaxScaler,StandardScaler, MaxAbsScaler, RobustScaler
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train) #train의 xmin,xmax학습 후 변환시킴 모두 0~1사이로
 x_test = scaler.transform(x_test)
@@ -88,39 +91,57 @@ history = model.fit(x_train, y_train, epochs=1000, batch_size = 55,
 
 train_time = time.time() - start_time
 
+# 4. evaluate, predict
 
-#4. evaluate, predict
-loss = model.evaluate(x_test,y_test)
-print("=====================================")
-print("loss : ", round(loss[0],4))
-print("acc :  ", round(loss[1],4))
-
-y_predict = model.predict(x_test)
-# print(y_predict[:10])
-y_predict = np.round(y_predict)
-
-acc_score = accuracy_score(y_test, y_predict)
-print("acc :  ", acc_score)
-
-r2 = r2_score(y_test, y_predict)
-
-mse = mean_squared_error(y_test, y_predict)
-
-def RMSE(y_test, y_predict):
-    return np.sqrt(mean_squared_error(y_test,y_predict))
-rmse = RMSE(y_test, y_predict)
-print(f"RMSE : {rmse : .2f}")
-
-my_util.record_model_csv(
-    model = model,
-    data_shape = x_train.shape,
-    random_num = 78,
-    batch_size = batch_size,
-    history = history,
-    training_time = train_time,
-    test_loss = loss,
-    r2 = r2
+result = model.evaluate(
+    x_test,
+    y_test,
+    return_dict=True
 )
 
+print(result)
+
+print("test loss :", result['loss'])
+print("test acc :", result['acc'])
+
+
+# sigmoid 확률값
+y_predict = model.predict(x_test).ravel()
+
+print("확률값 :", y_predict[:10])
+
+
+# 확률 → 0 / 1
+y_predict = (y_predict > 0.5).astype(int)
+
+print("분류 결과 :", y_predict[:10])
+
+
+# accuracy
+acc_score = accuracy_score(
+    y_test,
+    y_predict
+)
+
+print("accuracy_score :", acc_score)
+
+print(
+    "걸린시간 :",
+    round(train_time, 2),
+    "초"
+)
+
+
+# CSV 기록
+my_util.record_model_csv(
+    model=model,
+    data_shape=x_train.shape,
+    random_num=78,
+    batch_size=batch_size,
+    history=history,
+    training_time=train_time,
+    test_loss=result,
+    csv_file_path="./keras/model_history_log_v2.csv"
+)
 # acc :   0.9912280701754386
 # RMSE :  0.09
