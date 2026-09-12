@@ -1,3 +1,6 @@
 _data/
 **/submit/*.csv
 **/submission_result.csv
+__pycache__/
+*.pyc
+model_history_log.csv
